@@ -377,8 +377,9 @@ contract InfinityExchange is ReentrancyGuard, Ownable {
    * @param minNonce minimum user nonce
    */
   function cancelAllOrders(uint256 minNonce) external {
-    require(minNonce > userMinOrderNonce[msg.sender], 'nonce too low');
-    require(minNonce < userMinOrderNonce[msg.sender] + 1000000, 'too many');
+    uint256 minOrderNonce = userMinOrderNonce[msg.sender];
+    require(minNonce > minOrderNonce, 'nonce too low');
+    require(minNonce < minOrderNonce + 1000000, 'too many');
     userMinOrderNonce[msg.sender] = minNonce;
     emit CancelAllOrders(msg.sender, minNonce);
   }
