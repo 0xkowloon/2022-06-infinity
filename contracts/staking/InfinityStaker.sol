@@ -210,16 +210,16 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
   function getUserStakeLevel(address user) external view override returns (StakeLevel) {
     uint256 totalPower = getUserStakePower(user);
 
-    if (totalPower <= BRONZE_STAKE_THRESHOLD) {
-      return StakeLevel.NONE;
-    } else if (totalPower > BRONZE_STAKE_THRESHOLD && totalPower <= SILVER_STAKE_THRESHOLD) {
-      return StakeLevel.BRONZE;
-    } else if (totalPower > SILVER_STAKE_THRESHOLD && totalPower <= GOLD_STAKE_THRESHOLD) {
-      return StakeLevel.SILVER;
-    } else if (totalPower > GOLD_STAKE_THRESHOLD && totalPower <= PLATINUM_STAKE_THRESHOLD) {
-      return StakeLevel.GOLD;
-    } else {
+    if (totalPower > PLATINUM_STAKE_THRESHOLD) {
       return StakeLevel.PLATINUM;
+    } else if (totalPower > GOLD_STAKE_THRESHOLD) {
+      return StakeLevel.GOLD;
+    } else if (totalPower > SILVER_STAKE_THRESHOLD) {
+      return StakeLevel.SILVER;
+    } else if (totalPower > BRONZE_STAKE_THRESHOLD) {
+      return StakeLevel.BRONZE;
+    } else {
+      return StakeLevel.NONE;
     }
   }
 
