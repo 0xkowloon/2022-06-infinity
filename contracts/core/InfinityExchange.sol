@@ -518,16 +518,13 @@ contract InfinityExchange is ReentrancyGuard, Ownable {
     // Verify the validity of the signature
     (bytes32 r, bytes32 s, uint8 v) = abi.decode(order.sig, (bytes32, bytes32, uint8));
     bool sigValid = SignatureChecker.verify(orderHash, order.signer, r, s, v, DOMAIN_SEPARATOR);
-    if (
-      orderExpired ||
-      !sigValid ||
-      order.signer == address(0) ||
-      !_complications.contains(order.execParams[0]) ||
-      !_currencies.contains(order.execParams[1])
-    ) {
-      return false;
-    }
-    return true;
+    return (
+      !orderExpired &&
+      sigValid &&
+      order.signer != address(0) &&
+      _complications.contains(order.execParams[0]) &&
+      _currencies.contains(order.execParams[1])
+    );
   }
 
   /// @notice returns the number of complications supported by the exchange
