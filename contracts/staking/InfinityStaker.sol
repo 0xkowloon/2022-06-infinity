@@ -258,7 +258,6 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
    * @return Vested amount for the given duration
    */
   function getVestedAmount(address user, Duration duration) public view returns (uint256) {
-    uint256 amount = userStakedAmounts[user][duration].amount;
     uint256 timestamp = userStakedAmounts[user][duration].timestamp;
     // short circuit if no vesting for this duration
     if (timestamp == 0) {
@@ -267,7 +266,7 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
     uint256 durationInSeconds = _getDurationInSeconds(duration);
     uint256 secondsSinceStake = block.timestamp - timestamp;
 
-    return secondsSinceStake >= durationInSeconds ? amount : 0;
+    return secondsSinceStake >= durationInSeconds ? userStakedAmounts[user][duration].amount : 0;
   }
 
   // ====================================================== INTERNAL FUNCTIONS ================================================
