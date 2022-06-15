@@ -55,7 +55,7 @@ contract InfinityExchange is ReentrancyGuard, Ownable {
   address public immutable WETH;
   /// @dev Used in order signing with EIP-712
   bytes32 public immutable DOMAIN_SEPARATOR;
-  /// @dev This is the adress that is used to send auto sniped orders for execution on chain
+  /// @dev This is the address that is used to send auto sniped orders for execution on chain
   address public MATCH_EXECUTOR;
   /// @dev Gas cost for auto sniped orders are paid by the buyers and refunded to this contract in the form of WETH
   uint32 public WETH_TRANSFER_GAS_UNITS = 50000;
