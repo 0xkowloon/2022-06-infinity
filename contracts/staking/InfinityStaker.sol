@@ -22,11 +22,10 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
   ///@dev Storage variable to keep track of the staker's staked duration and amounts
   mapping(address => mapping(Duration => StakeAmount)) public userStakedAmounts;
 
-  address public INFINITY_TOKEN;
   ///@dev Infinity treasury address - will be a EOA/multisig
   address public INFINITY_TREASURY;
 
-  /**@dev Power levels to reach the specified stake thresholds. Users can reach these levels 
+  /**@dev Power levels to reach the specified stake thresholds. Users can reach these levels
           either by staking the specified number of tokens for no duration or a less number of tokens but with higher durations.
           See getUserStakePower() to see how users can reach these levels.
   */
@@ -40,6 +39,8 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
   uint16 public THREE_MONTH_PENALTY = 2;
   uint16 public SIX_MONTH_PENALTY = 3;
   uint16 public TWELVE_MONTH_PENALTY = 4;
+
+  address public INFINITY_TOKEN;
 
   event Staked(address indexed user, uint256 amount, Duration duration);
   event DurationChanged(address indexed user, uint256 amount, Duration oldDuration, Duration newDuration);
