@@ -4,7 +4,6 @@ pragma solidity 0.8.14;
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {IERC20, SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {Pausable} from '@openzeppelin/contracts/security/Pausable.sol';
-import {ReentrancyGuard} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {IStaker, Duration, StakeLevel} from '../interfaces/IStaker.sol';
 
 /**
@@ -12,7 +11,7 @@ import {IStaker, Duration, StakeLevel} from '../interfaces/IStaker.sol';
  * @author nneverlander. Twitter @nneverlander
  * @notice The staker contract that allows people to stake tokens and earn voting power to be used in curation and possibly other places
  */
-contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
+contract InfinityStaker is IStaker, Ownable, Pausable {
   using SafeERC20 for IERC20;
   struct StakeAmount {
     uint256 amount;
@@ -65,14 +64,14 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
    * @param amount Amount of tokens to stake
    * @param duration Duration of the stake
    */
-  function stake(uint256 amount, Duration duration) external override nonReentrant whenNotPaused {
+  function stake(uint256 amount, Duration duration) external override whenNotPaused {
     require(amount != 0, 'stake amount cant be 0');
     require(IERC20(INFINITY_TOKEN).balanceOf(msg.sender) >= amount, 'insufficient balance to stake');
+    // perform transfer
+    IERC20(INFINITY_TOKEN).safeTransferFrom(msg.sender, address(this), amount);
     // update storage
     userStakedAmounts[msg.sender][duration].amount += amount;
     userStakedAmounts[msg.sender][duration].timestamp = block.timestamp;
-    // perform transfer
-    IERC20(INFINITY_TOKEN).safeTransferFrom(msg.sender, address(this), amount);
     // emit event
     emit Staked(msg.sender, amount, duration);
   }
@@ -88,7 +87,7 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
     uint256 amount,
     Duration oldDuration,
     Duration newDuration
-  ) external override nonReentrant whenNotPaused {
+  ) external override whenNotPaused {
     require(amount != 0, 'amount cant be 0');
     require(
       userStakedAmounts[msg.sender][oldDuration].amount >= amount,
@@ -114,7 +113,7 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
    * @dev Storage updates are done for each stake level. See _updateUserStakedAmounts for more details
    * @param amount Amount of tokens to unstake
    */
-  function unstake(uint256 amount) external override nonReentrant whenNotPaused {
+  function unstake(uint256 amount) external override whenNotPaused {
     require(amount != 0, 'stake amount cant be 0');
     uint256 noVesting = userStakedAmounts[msg.sender][Duration.NONE].amount;
     uint256 vestedThreeMonths = getVestedAmount(msg.sender, Duration.THREE_MONTHS);
@@ -134,7 +133,7 @@ contract InfinityStaker is IStaker, Ownable, Pausable, ReentrancyGuard {
   /**
    * @notice Ragequit tokens. Applies penalties for unvested tokens
    */
-  function rageQuit() external override nonReentrant {
+  function rageQuit() external override {
     (uint256 totalToUser, uint256 penalty) = getRageQuitAmounts(msg.sender);
     // update storage
     _clearUserStakedAmounts(msg.sender);
