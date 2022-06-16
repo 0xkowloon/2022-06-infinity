@@ -1224,8 +1224,8 @@ contract InfinityExchange is ReentrancyGuard, Ownable {
   }
 
   /// @dev used for rescuing exchange fees paid to the contract in ETH
-  function rescueETH(address destination) external payable onlyOwner {
-    (bool sent, ) = destination.call{value: msg.value}('');
+  function rescueETH(address destination) external onlyOwner {
+    (bool sent, ) = destination.call{value: address(this).balance}('');
     require(sent, 'failed');
   }
 
